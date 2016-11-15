@@ -63,6 +63,29 @@ class Book implements JsonSerializable{
         
     }
     
+    public static function loadAllFromDB(mysqli $conn){
+        $sql="SELECT * FROM Books;";
+        $result = $conn->query($sql);
+        
+        $books=[];
+        
+        if($result==TRUE){
+           foreach($result as $row){
+               $book= new Book();
+               $book->id=$row['id'];
+               $book->title=$row['title'];
+               $book->author=$row['author'];
+               $book->description=$row['description'];
+               
+               $books[]=$book;
+               
+             
+           }
+            
+        }
+        return $books;
+    }
+    
     public function createBook(mysqli $conn){
         
         $sql="INSERT INTO Books (title, author, description) VALUES('$this->title', '$this->author', '$this->description');";
