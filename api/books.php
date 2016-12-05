@@ -8,9 +8,9 @@ include($dir . '/src/book.php');
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if (isset($_GET['id']) && $_GET['id'] > 0) {
-        $books = Book::loadFromDb($conn, $_GET['id']);
-        echo json_encode($book);
+    if (isset($_GET['id']) && intval($_GET['id']) > 0) {
+        $books = Book::loadFromDb($conn, intval($_GET['id']));
+        echo json_encode($books);
     } else {
         $books = Book::loadFromDb($conn);
         echo json_encode($books);
@@ -38,9 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     $editedBook->updateBook($conn, $id);
     header('Location: ../index.php');
+    
 } else if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
     parse_str(file_get_contents("php://input"), $del_vars);
     $id = $del_vars['id'];
     Book::deleteFromDB($conn, $id);
     header('Location: ../index.php');
 }
+

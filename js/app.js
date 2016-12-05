@@ -1,25 +1,26 @@
 $(function () {
-       $.ajax({
+    //loading all books from DB
+    $.ajax({
         url: 'api/books.php',
         type: 'GET',
         dataType: 'json'
     }).done(function (result) {
-        
+    
 
         for (var i = 0; i < result.length; i++) {
             var book = JSON.parse(result[i]);
            
-            var bookDiv = $('<div>');
-            bookDiv.addClass('singleBook').addClass('panel').addClass('panel-info');
-            var titleDiv = $('<div>');
-            titleDiv.addClass('panel-heading').addClass('clearfix');
+
+            //div for single book
+            var bookDiv = $('<div>').addClass('singleBook').addClass('col-sm-8 panel').addClass('panel panel-default');
+            var titleDiv = $('<div>').addClass('panel-heading').addClass('clearfix');
             var title = $('<h4>');
-            title.addClass('panel-title');
+            title.addClass('text');
             title.attr('data-id', book.id);
             title.attr('style', 'display: inline-block');
             title.html('<a class="bookTitle" data-toggle="collapse" data-parent="#bookList" href="#desc'
-                    + book.id + '">' + book.title + '</a>');
-            var deleteBtn = $('<button>').addClass('btn').addClass('btn-primary').addClass('pull-right');
+                    + book.id + '">' + book.title +" &nbsp/" + book.author + '</a>');
+            var deleteBtn = $('<button>').addClass('btn').addClass('btn btn-default').addClass('pull-right');
             deleteBtn.addClass('deleteBook');
             deleteBtn.text('Delete');
             titleDiv.append(title);
@@ -27,7 +28,7 @@ $(function () {
             bookDiv.append(titleDiv);
 
 
-           
+            //div for description
             var descDiv = $('<div>');
             descDiv.attr('id', 'desc' + book.id);
             descDiv.addClass('panel-collapse').addClass('collapse');
@@ -36,6 +37,7 @@ $(function () {
             descDiv.append(desc);
             bookDiv.append(descDiv);
 
+          
             $('#bookList').append(bookDiv);
         }
 
@@ -50,14 +52,13 @@ $(function () {
 
         var target = $(e.target);
         var bookTitle = $(e.target).closest('.singleBook').find('.bookTitle');
+        var desc = target.closest('.singleBook').find('.description');
 
-        if (target[0] == bookTitle[0]) {
-
-            var desc = target.closest('.singleBook').find('.description');
+            //loding sigle book
+        var bookId = target.closest('.singleBook').find('.text').attr('data-id');
+        console.log(bookId);
 
             
-            var bookId = target.closest('.singleBook').find('.panel-title').attr('data-id');
-
             $.ajax({
                 url: 'api/books.php',
                 type: 'GET',
@@ -66,31 +67,14 @@ $(function () {
 
             }).done(function (result) {
                 var book = JSON.parse(result[0]);
+                
 
-                var form = '<form class="form-inline editingForm" action="api/books.php" method="PUT">\n\
-                    <div class="form-group">\n\
-                        <label for="title">Nowy tytuł:</label>\n\
-                        <input type="text" class="form-control" name="title">\n\
-                    </div>\n\
-                    <div class="form-group">\n\
-                        <label for="author">Nowy autor:</label>\n\
-                        <input type="text" class="form-control" name="author">\n\
-                    </div>\n\
-                    <div class="form-group">\n\
-                        <label for="desc">Nowy opis:</label>\n\
-                        <input type="text" class="form-control" name="desc">\n\
-                    </div>\n\
-                    <button type="submit" class="btn btn-primary" id="editBook">Zmień</button>\n\
-                </form>';
-
-                desc.html('<p class="text-info">' + book.author + '</p><p>'
-                        + book.description + '</p>' + form);
+                desc.html('<p class="text-info">Author: ' + book.author + '</p> '+ '<p> Description:<br> '
+                        + book.description + '</p>');
 
             }).fail(function (result) {
                 console.log('Error');
             });
-
-        }
 
     });
 
@@ -110,7 +94,7 @@ $(function () {
                 data: 'id=' + bookId,
                 
             }).done(function (result) {
-                console.log('Book deleted');
+                console.log('The book has been deleted');
                 location.reload();
             }).fail(function (result) {
                 console.log('Error');
@@ -120,7 +104,6 @@ $(function () {
 
     });
 
-    
 
 
 });
