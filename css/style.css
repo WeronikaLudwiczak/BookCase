@@ -19,5 +19,12 @@
     color: grey;
 }
 .description{
-    height: 100px;
+    height: 200px;
+}
+
+
+.fixed-panel {
+  min-height: 10;
+  max-height: 10;
+  overflow-y: scroll;
 }

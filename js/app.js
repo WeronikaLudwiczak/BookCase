@@ -32,7 +32,7 @@ $(function () {
             var descDiv = $('<div>');
             descDiv.attr('id', 'desc' + book.id);
             descDiv.addClass('panel-collapse').addClass('collapse');
-            var desc = $('<div>').addClass("panel-body").addClass('description');
+            var desc = $('<div>').addClass('panel-body fixed-panel').addClass('description');
 
             descDiv.append(desc);
             bookDiv.append(descDiv);
@@ -54,9 +54,9 @@ $(function () {
         var bookTitle = $(e.target).closest('.singleBook').find('.bookTitle');
         var desc = target.closest('.singleBook').find('.description');
 
-            //loding sigle book
+            //loading sigle book
         var bookId = target.closest('.singleBook').find('.text').attr('data-id');
-        console.log(bookId);
+        
 
             
             $.ajax({
@@ -68,9 +68,12 @@ $(function () {
             }).done(function (result) {
                 var book = JSON.parse(result[0]);
                 
+        var editLink = '<a href="#edit" id="editBook">Edit</a>';
+        
+                
 
-                desc.html('<p class="text-info">Author: ' + book.author + '</p> '+ '<p> Description:<br> '
-                        + book.description + '</p>');
+                desc.html('<p class="text-info">Author: ' + book.author + '</p> '+ '<div> Description:<br> '
+                        + book.description + '</div>' + editLink);
 
             }).fail(function (result) {
                 console.log('Error');
@@ -78,6 +81,8 @@ $(function () {
 
     });
 
+
+// deletion of a single book
 
     $('#bookList').on('click', $('.deleteBook'), function (e) {
 
@@ -91,7 +96,7 @@ $(function () {
             $.ajax({
                 url: 'api/books.php',
                 type: 'DELETE',
-                data: 'id=' + bookId,
+                data: 'id=' + bookId
                 
             }).done(function (result) {
                 console.log('The book has been deleted');
@@ -100,6 +105,66 @@ $(function () {
                 console.log('Error');
             });
 
+        }
+
+    });
+    
+    $('#bookList').on('click', $('#editBtn'), function (e) {
+     
+        var target = $(e.target);
+
+        var desc = target.closest('.singleBook').find('.description');
+        console.log(desc);
+
+          
+        var bookId = target.closest('.singleBook').find('.text').attr('data-id');
+       
+        
+        var form ='<form class="form-inline editingForm" action="api/books.php" method="PUT">\n\
+                    <div class="form-group">\n\
+                        <label for="title">New Title:</label>\n\
+                        <input type="text" class="form-control" name="title">\n\
+                    </div>\n\
+                    <div class="form-group">\n\
+                        <label for="author">New Author:</label>\n\
+                        <input type="text" class="form-control" name="author">\n\
+                    </div>\n\
+                    <div class="form-group">\n\
+                        <label for="desc">New Description:</label>\n\
+                        <input type="text" class="form-control" name="description">\n\
+                    </div>\n\
+                    <button type="submit" class="btn btn-primary" id="editBook">Edit</button>\n\
+                </form>';
+        
+        desc.html(form);
+        
+        
+    });
+    
+    
+    $('#bookList').on('click', $('#editBook'), function (e) {
+
+//        e.preventDefault();
+
+        var target = $(e.target);
+        var editBtn = $(e.target).closest('.singleBook').find('#editBook');
+
+        if (target[0] == editBtn[0]) {
+            var bookId = $(e.target).closest('div.panel-collapse').prev().find('h4').attr('data-id');
+            var newTitle = $(e.target).parent().find('input[name="title"]').val();
+            var newAuthor = $(e.target).parent().find('input[name="author"]').val();
+            var newDesc = $(e.target).parent().find('input[name="description"]').val();
+
+            $.ajax({
+                url: 'api/books.php',
+                type: 'PUT',
+                data: 'id=' + bookId + '&title=' + newTitle + '&author=' + newAuthor + '&description=' + newDesc,
+            }).done(function (result) {
+                console.log('Edytowano książkę');
+                location.reload();
+            }).fail(function (result) {
+                console.log('Error - nie mogę edytować książki');
+            });
         }
 
     });

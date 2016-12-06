@@ -43,7 +43,7 @@ class Book implements JsonSerializable {
         if (!is_null($id)) {
             $result = $conn->query("SELECT * FROM Books WHERE id=$id");
         } else {
-            $result = $conn->query("SELECT * FROM Books;");        }
+            $result = $conn->query("SELECT * FROM Books ORDER BY title ASC;");        }
 
         if ($result && $result->num_rows > 0) {
             foreach ($result as $row) {
